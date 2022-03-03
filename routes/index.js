@@ -2,14 +2,28 @@
  * Created by AyushK on 18/09/20.
  */
 import * as ValidationManger from "../middleware/validation";
-import TestModule from "../app/modules/testModule";
+import AlertModule from "../app/modules/alerts";
+import DestinationModule from "../app/modules/destination";
 import {stringConstants} from "../app/common/constants";
 
 module.exports = (app) => {
     app.get('/', (req, res) => res.send(stringConstants.SERVICE_STATUS_HTML));
 
     /**
-     * route definition
+     * Alert definition
      */
-    app.get("/test-route", ValidationManger.validateUserLogin, new TestModule().testRoute);
+    app.post("/alert",ValidationManger.validateAddAlert, new AlertModule().addAlert);
+    app.post("/alert-list", new AlertModule().getAlertList);
+    app.get("/alert/:alertId", new AlertModule().getAlert);
+    app.delete("/alert/:alertId", new AlertModule().deleteAlert);
+
+    /**
+     * Destination definition
+     */
+    app.post("/destination",ValidationManger.validateAddDestination, new DestinationModule().addDestination);
+    app.post("/destination-list", new DestinationModule().getDestinations);
+    app.delete("/destination/:destinationId", new DestinationModule().deleteDestination);
+
+
+
 };
