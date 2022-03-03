@@ -2,10 +2,26 @@ import Utils from '../app/utils'
 import * as yup from 'yup'
 
 module.exports = {
-  validateUserLogin: async (req, res, next) => {
+  validateAddAlert: async (req, res, next) => {
     const schema = yup.object().shape({
-      email: yup.string().email(),
-      password: yup.string().min(8).required()
+      userId: yup.string().required(),
+      type: yup.string().required(),
+      target: yup.object().shape({
+         type:  yup.string().required(),
+         value: yup.string().required(),
+         name:  yup.string().required(),
+         network:  yup.string().required(),
+         threshold : yup.string()
+      }),
+    })
+    await validate(schema, req.body, res, next)
+  },
+  validateAddDestination: async (req, res, next) => {
+    const schema = yup.object().shape({
+      userId:  yup.string().required(),
+      type: yup.string().required(),
+      label: yup.string().required(),
+      url:  yup.string().required(),
     })
     await validate(schema, req.body, res, next)
   }
