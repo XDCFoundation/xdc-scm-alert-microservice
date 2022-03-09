@@ -20,7 +20,8 @@ export default class Manger {
                     addresses.push(transactions[index].contractAddress)
             }
             let contracts = await ContractSchema.getContracts({ "address": { $in: addresses } });
-            let alerts = await AlertSchema.findData({});
+            let alerts = await AlertSchema.findData({isDeleted:false});
+            if(!alerts || !alerts.length) return;
             for (let alertIndex = 0; alertIndex < transactions.length; alertIndex++) {
                 let ifAlert = alerts.filter((item) => { if (item.target.value === transactions[alertIndex].contractAddress) return true; })
                 if (ifAlert) {
