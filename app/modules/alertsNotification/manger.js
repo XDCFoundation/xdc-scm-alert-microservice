@@ -100,14 +100,16 @@ const sendDataToQueue = async (transaction, alert) => {
             if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
                 let mailNotificationRes = getMailNotificationResponse(transaction, alert.type, dest[index]);
                 Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                console.log("QUEUE" , Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 const amqpRes = await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
-                console.log("AMQP res" ,amqpRes);
+                console.log("AMQP res" ,amqpRes );
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification email", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
 
             }
             else if (dest[index].type === alertType.DESTINATION_TYPE.SLACK.type) {
                 let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
                 Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                console.log("QUEUE" , Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification slack", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
 
@@ -116,6 +118,7 @@ const sendDataToQueue = async (transaction, alert) => {
             else if(dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type){
                 let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
                 Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                console.log("QUEUE" , Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url , slackNotificationRes , {} )
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification webhook", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
             }
