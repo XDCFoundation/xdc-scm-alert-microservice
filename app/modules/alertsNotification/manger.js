@@ -47,8 +47,8 @@ export default class Manger {
             }
 
         }
-        catch (e) {
-            console.log(e);
+        catch (error) {
+           throw error;
         }
     }
     checkIfNotification = async (alert, transaction) => {
@@ -98,7 +98,7 @@ const sendDataToQueue = async (transaction, alert) => {
 
         for (let index = 0; index < dest.length; index++) {
             if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
-                let mailNotificationRes = getMailNotificationResponse(transaction, alert.type, dest[index]);
+                let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index]);
                 Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                 console.log("QUEUE", Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 const amqpRes = await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
@@ -107,7 +107,7 @@ const sendDataToQueue = async (transaction, alert) => {
 
             }
             else if (dest[index].type === alertType.DESTINATION_TYPE.SLACK.type) {
-                let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
+                let slackNotificationRes = getSlackNotificationResponse(transaction, alert, dest[index])
                 Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                 console.log("QUEUE", Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
@@ -116,7 +116,7 @@ const sendDataToQueue = async (transaction, alert) => {
 
             }
             else if (dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type) {
-                let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
+                let slackNotificationRes = getSlackNotificationResponse(transaction, alert, dest[index])
                 Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                 console.log("QUEUE", Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url, slackNotificationRes, {})
@@ -138,12 +138,12 @@ const getMailBody = (transaction, type) => {
             </body></html>`
     )
 }
-const getMailNotificationResponse = (transaction, type, destination) => {
+const getMailNotificationResponse = (transaction, alert, destination) => {
     return {
-        "title": alertType.ALERT_TYPE[type].name,
-        "description": getMailBody(transaction, type),
+        "title": alertType.ALERT_TYPE[alert.type].name,
+        "description": getMailBody(transaction, alert.type),
         "timestamp": transaction.timestamp,
-        "userID": "",
+        "userID": alert.userId,
         "postedTo": destination.url,
         "postedBy": 'XDC SCM',
         "payload": { timestamp: transaction.timestamp, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network },
@@ -153,10 +153,10 @@ const getMailNotificationResponse = (transaction, type, destination) => {
         "addedOn": Date.now(),
     }
 }
-const getSlackNotificationResponse = (transaction, type, destination) => {
+const getSlackNotificationResponse = (transaction, alert, destination) => {
     return {
-        "title": alertType.ALERT_TYPE[type].name,
-        "description": getMessage(transaction, type),
+        "title": alertType.ALERT_TYPE[alert.type].name,
+        "description": getMessage(transaction, alert.type),
         "timestamp": transaction.timestamp,
         "userID": "",
         "postedTo": destination.channelName || "#watchdogs",
