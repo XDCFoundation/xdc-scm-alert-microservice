@@ -35,7 +35,13 @@ alertSchema.method({
 })
 alertSchema.static({
   findData: function (findObj) {
-    return this.find(findObj)
+    return this.find(findObj).populate("destinations",{
+      destinationId:1,
+      type:1,
+      url:1,
+      label:1,
+      channelName:1
+    });
   },
   findOneData: function (findObj) {
     return this.findOne(findObj).populate("destinations",{
