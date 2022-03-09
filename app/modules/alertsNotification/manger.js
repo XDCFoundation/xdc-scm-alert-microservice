@@ -7,18 +7,7 @@ import Config from "../../../config"
 import Utils from "../../utils";
 import { executeHTTPRequest } from "../../service/http-service";
 export default class Manger {
-    async syncTransactions() {
-        try {
-            userAddresses = [];
-            userAddresses = await ContractSchema.findData({});
 
-            Utils.lhtLog("syncTransactions", "get adresses listener", userAddresses.length, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-
-        } catch (err) {
-            Utils.lhtLog("syncTransactions", `catch block error: ${err}`, err, "kajalB", httpConstants.LOG_LEVEL_TYPE.ERROR)
-            throw err;
-        }
-    }
     getTransactions = async (transactions) => {
         try {
             let addresses =[]
@@ -66,14 +55,14 @@ export default class Manger {
         switch (alert.type) {
             case alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type:
                 if (transaction.status === true) {
+                    Utils.lhtLog("checkIfNotification", alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type, {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                     await sendDataToQueue(transaction, alert)
-                    console.log('SUCCESFULL TRANSACTION');
                 }
                 break;
             case alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type:
                 if (transaction.status === false) {
+                    Utils.lhtLog("checkIfNotification", alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type, {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                     await sendDataToQueue(transaction, alert)
-                    console.log('FAILED TRANSACTION');
                 }
                 break;
             case alertType.ALERT_TYPE.TOKEN_TRANSFER.type:
@@ -81,8 +70,8 @@ export default class Manger {
                 break;
             case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
                 if (transaction.value === alert.target.threshold) {
+                    Utils.lhtLog("checkIfNotification", alertType.ALERT_TYPE.TRANSACTION_VALUE.type, {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                     await sendDataToQueue(transaction, alert)
-                    console.log('TRANSACTION Value');
                 }
                 break;
             case alertType.ALERT_TYPE.XDC_BALANCE.type:
@@ -105,19 +94,30 @@ export default class Manger {
 const sendDataToQueue = async (transaction, alert) => {
     if (alert && alert.destinations && alert.destinations.length) {
         let dest = alert.destinations;
+        Utils.lhtLog("sendDataToQueue", "get Destinations", dest, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+
         for (let index = 0; index < dest.length; index++) {
             if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
                 let mailNotificationRes = getMailNotificationResponse(transaction, alert.type, dest[index]);
-                await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
+                Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                const amqpRes = await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
+                console.log("AMQP res" ,amqpRes);
+                Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification email", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+
             }
             else if (dest[index].type === alertType.DESTINATION_TYPE.SLACK.type) {
                 let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
+                Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                 await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
+                Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification slack", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+
 
             }
             else if(dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type){
                 let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
+                Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                 await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url , slackNotificationRes , {} )
+                Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification webhook", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
             }
         }
     }
