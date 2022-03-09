@@ -19,6 +19,7 @@ const alertSchema = new mongoose.Schema({
      name: { type:String, default: "" },
      network: { type:String, default: "" },
      threshold :{ type:String, default: ""},
+     contractId : { type: mongoose.Types.ObjectId, ref: "xin-contract" , default:"" }
   },
   destinations: [{ type: mongoose.Types.ObjectId, ref: "xin-destination" }],
   status: { type: Boolean, default: true },
