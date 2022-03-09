@@ -10,16 +10,16 @@ export default class Manger {
 
     getTransactions = async (transactions) => {
         try {
-            let addresses =[]
+            let addresses = []
             for (let index = 0; index < transactions.length; index++) {
-               let cIndex = addresses.findIndex((address)=>{
-                   if(transactions[index].contractAddress === address)
-                   return true;
-               })
-               if(cIndex === -1)
-                addresses.push(transactions[index].contractAddress)
+                let cIndex = addresses.findIndex((address) => {
+                    if (transactions[index].contractAddress === address)
+                        return true;
+                })
+                if (cIndex === -1)
+                    addresses.push(transactions[index].contractAddress)
             }
-            let contracts = await ContractSchema.getContracts( {"address": {$in: addresses}});
+            let contracts = await ContractSchema.getContracts({ "address": { $in: addresses } });
             let alerts = await AlertSchema.findData({});
             for (let alertIndex = 0; alertIndex < transactions.length; alertIndex++) {
                 let ifAlert = alerts.filter((item) => { if (item.target.value === transactions[alertIndex].contractAddress) return true; })
@@ -100,26 +100,26 @@ const sendDataToQueue = async (transaction, alert) => {
             if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
                 let mailNotificationRes = getMailNotificationResponse(transaction, alert.type, dest[index]);
                 Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-                console.log("QUEUE" , Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
+                console.log("QUEUE", Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 const amqpRes = await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
-                console.log("AMQP res" ,amqpRes );
+                console.log("AMQP res", amqpRes);
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification email", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
 
             }
             else if (dest[index].type === alertType.DESTINATION_TYPE.SLACK.type) {
                 let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
                 Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-                console.log("QUEUE" , Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
+                console.log("QUEUE", Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
                 await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification slack", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
 
 
             }
-            else if(dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type){
+            else if (dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type) {
                 let slackNotificationRes = getSlackNotificationResponse(transaction, alert.type, dest[index])
                 Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-                console.log("QUEUE" , Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
-                await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url , slackNotificationRes , {} )
+                console.log("QUEUE", Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE);
+                await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url, slackNotificationRes, {})
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification webhook", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
             }
         }
@@ -131,8 +131,8 @@ const getMailBody = (transaction, type) => {
     return (
         `<html>
             <body><h3>
-             Hi 
-            </h3>,<br><br>
+             Hi,
+            </h3><br>
             ${message}<br>
             Best Regards<br><br>Team XDC SCM
             </body></html>`
@@ -142,11 +142,11 @@ const getMailNotificationResponse = (transaction, type, destination) => {
     return {
         "title": alertType.ALERT_TYPE[type].name,
         "description": getMailBody(transaction, type),
-        "timestamp": Date.now(),
+        "timestamp": transaction.timestamp,
         "userID": "",
         "postedTo": destination.url,
         "postedBy": 'XDC SCM',
-        "payload": { timestamp: Date.now() },
+        "payload": { timestamp: transaction.timestamp, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network },
         "type": "email",
         "sentFromEmail": "XFLW@xinfin.org",
         "sentFromName": destination.label,
@@ -157,11 +157,11 @@ const getSlackNotificationResponse = (transaction, type, destination) => {
     return {
         "title": alertType.ALERT_TYPE[type].name,
         "description": getMessage(transaction, type),
-        "timestamp": Date.now(),
+        "timestamp": transaction.timestamp,
         "userID": "",
         "postedTo": destination.channelName || "#watchdogs",
         "postedBy": 'XDC',
-        "payload": { timestamp: Date.now(), url: destination.url },
+        "payload": { timestamp: transaction.timestamp, url: destination.url, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network },
         "type": "slack",
         "addedOn": Date.now(),
     }
@@ -175,8 +175,8 @@ const getMessage = (transaction, type) => {
         return (
             `A Failed Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
         )
-    else if (type === alertType.ALERT_TYPE.TRANSACTION_VALUE.type)  
-    return (
-        `Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
-    )
+    else if (type === alertType.ALERT_TYPE.TRANSACTION_VALUE.type)
+        return (
+            `Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+        )
 }
