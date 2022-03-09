@@ -83,3 +83,40 @@ export const apiFailureMessage = {
   SESSION_GENERATION: 'Unable to generate session!',
   SESSION_EXPIRED: 'Session Expired!'
 }
+export const amqpConstants = {
+  rabbitMqConst: {
+    NO_CONNECTION: 'Server is not running. Restart your app',
+    RABBITMQ_NOT_STARTED: 'Unable to start Rabbit Mq server',
+    RABBITMQ_START: 'RabbitMq server successfully started'
+  },
+  queueType: {
+    ONE_TO_ONE_QUEUE: 'one_to_one_queue',
+    DISTRIBUTED_QUEUE: 'distributed_queue',
+    PUBLISHER_SUBSCRIBER_QUEUE: 'publisher_subscriber_queue',
+    ROUTING_QUEUE: 'routing_queue',
+    TOPICS_QUEUE: 'topics_queue',
+    REQUEST_REPLY_QUEUE: 'request_reply_queue',
+  },
+  exchangeType: {
+    FANOUT: 'fanout',
+    TOPIC: 'topic'
+  },
+  AMQP_PAYLOAD_TYPE: {}
+};
+
+export const alertType = {
+  ALERT_TYPE:{
+    SUCCESSFULL_TRANSACTIONS:{type:"SUCCESSFULL_TRANSACTIONS" , name:"Successfull Transaction"},
+    FAILED_TRANSACTIONS:{type:"FAILED_TRANSACTIONS" , name:"Failed Transaction"},
+    TOKEN_TRANSFER:{type:"TOKEN_TRANSFER" , name:"Token Transfer"},
+    TRANSACTION_VALUE:{type:"TRANSACTION_VALUE" , name:"Value"},
+    XDC_BALANCE:{type:"XDC_BALANCE" , name:"Balance"},
+    STATE_CHANGE:{type:"STATE_CHANGE" , name:"State Change"},
+    FUNCTION_CALL:{type:"FUNCTION_CALL" , name:"Function Call"}
+  },
+  DESTINATION_TYPE:{
+    EMAIL:{type:"EMAIL" },
+    WEBHOOK:{type:"WEBHOOK"},
+    SLACK:{type:"SLACK"},
+  }
+}

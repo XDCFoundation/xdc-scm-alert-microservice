@@ -9,6 +9,7 @@ const destinationSchema = new mongoose.Schema({
     },
     label: { type: String, default: '' },
     url: { type: String, default: '' },
+    channelName: { type: String, default: '' },
     status: { type: String, default: '' },
     isDeleted: { type: Boolean, default: false },
     isInActive: { type: Boolean, default: false },
