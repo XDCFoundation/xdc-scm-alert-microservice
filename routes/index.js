@@ -4,6 +4,7 @@
 import * as ValidationManger from "../middleware/validation";
 import AlertModule from "../app/modules/alerts";
 import DestinationModule from "../app/modules/destination";
+import HistoryModule from "../app/modules/history";
 import {stringConstants} from "../app/common/constants";
 
 module.exports = (app) => {
@@ -25,6 +26,9 @@ module.exports = (app) => {
     app.post("/destination-list", new DestinationModule().getDestinations);
     app.delete("/destination/:destinationId", new DestinationModule().deleteDestination);
 
-
+    /**
+     * History definition
+     */
+    app.post("/history-list", new HistoryModule().getHistoryList);
 
 };

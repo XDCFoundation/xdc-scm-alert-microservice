@@ -19,7 +19,7 @@ const alertSchema = new mongoose.Schema({
      name: { type:String, default: "" },
      network: { type:String, default: "" },
      threshold :{ type:String, default: ""},
-     contractId : { type: mongoose.Types.ObjectId, ref: "xin-contract" }
+     contract : { type: mongoose.Types.ObjectId, ref: "xin-contract" }
   },
   destinations: [{ type: mongoose.Types.ObjectId, ref: "xin-destination" }],
   status: { type: Boolean, default: true },
@@ -42,7 +42,7 @@ alertSchema.static({
       url:1,
       label:1,
       channelName:1
-    });
+    }).populate("target.contractId");
   },
   findOneData: function (findObj) {
     return this.findOne(findObj).populate("destinations",{
