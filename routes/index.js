@@ -16,6 +16,7 @@ module.exports = (app) => {
     app.post("/alert-list", new AlertModule().getAlertList);
     app.get("/alert/:alertId", new AlertModule().getAlert);
     app.delete("/alert/:alertId", new AlertModule().deleteAlert);
+    app.put("/alert/:alertId", new AlertModule().updateAlert);
 
     /**
      * Destination definition
