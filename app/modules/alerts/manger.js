@@ -30,5 +30,8 @@ export default class Manger {
     deleteAlert = async (requestData) => {
         return await AlertSchema.findOneAndUpdateData({ alertId: requestData.alertId }, { isDeleted: true });
     }
+    updateAlert = async (param , request) => {
+        return await AlertSchema.findOneAndUpdateData({ alertId: param.alertId }, request);
+    }
 
 }

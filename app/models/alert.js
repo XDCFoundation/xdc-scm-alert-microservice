@@ -19,7 +19,7 @@ const alertSchema = new mongoose.Schema({
      name: { type:String, default: "" },
      network: { type:String, default: "" },
      threshold :{ type:String, default: ""},
-     contractId : { type: mongoose.Types.ObjectId, ref: "xin-contract" , default:"" }
+     contractId : { type: mongoose.Types.ObjectId, ref: "xin-contract" }
   },
   destinations: [{ type: mongoose.Types.ObjectId, ref: "xin-destination" }],
   status: { type: Boolean, default: true },
@@ -57,7 +57,12 @@ alertSchema.static({
       upsert: true,
       new: true,
       setDefaultsOnInsert: true
-    })
+    }).populate("destinations",{
+      destinationId:1,
+      type:1,
+      url:1,
+      label:1
+    });
   },
   findDataWithAggregate: function (findObj) {
     return this.aggregate(findObj)
