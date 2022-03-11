@@ -1,4 +1,4 @@
-
+import Config from "../config";
 
 export default class EmailTemplate {
 static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
@@ -139,7 +139,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
                 <span class="values">XDC Mainnet</span>
               </div>
             </div>
-            <button class="button">View in Xmartly</button>
+            <a class="button" href=${Config.WEB_APP_URL}${transaction.hash}>View in Xmartly</a>
           </div>
         </div>
       </body>`
