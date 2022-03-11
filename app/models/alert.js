@@ -42,7 +42,7 @@ alertSchema.static({
       url:1,
       label:1,
       channelName:1
-    }).populate("target.contractId");
+    }).populate("target.contract");
   },
   findOneData: function (findObj) {
     return this.findOne(findObj).populate("destinations",{
