@@ -1,4 +1,3 @@
-import { request } from "express";
 import { alertType, amqpConstants, httpConstants } from "../../common/constants";
 import ContractSchema from "../../models/contract";
 import AlertSchema from "../../models/alert";
@@ -7,6 +6,8 @@ import AMQPController from "../../../library";
 import Config from "../../../config"
 import Utils from "../../utils";
 import { executeHTTPRequest } from "../../service/http-service";
+import EmailTemplate from '../../../views/emailTemplate';
+
 export default class Manger {
 
     getTransactions = async (transactions) => {
@@ -20,7 +21,7 @@ export default class Manger {
                 if (cIndex === -1)
                     addresses.push(transactions[index].contractAddress)
             }
-            let contracts = await ContractSchema.getContracts({ "address": { $in: addresses } , isDeleted: false });
+            let contracts = await ContractSchema.getContracts({ "address": { $in: addresses }, isDeleted: false });
             let alerts = await AlertSchema.findData({ isDeleted: false, status: true });
             if (!alerts || !alerts.length) return;
             for (let alertIndex = 0; alertIndex < transactions.length; alertIndex++) {
@@ -105,7 +106,7 @@ const sendDataToQueue = async (transaction, alert) => {
 
         for (let index = 0; index < dest.length; index++) {
             if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
-                let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index],"MAIL", typeName);
+                let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName);
                 Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO);
                 await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
                 Utils.lhtLog("sendDataToQueue", "sendDataToQueue:notification email", {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
@@ -126,27 +127,15 @@ const sendDataToQueue = async (transaction, alert) => {
     }
 }
 
-const getMailBody = (transaction, type) => {
-    let message = getMessage(transaction, type)
-    return (
-        `<html>
-            <body><h3>
-             Hi,
-            </h3><br>
-            ${message}<br>
-            Best Regards<br><br>Team XDC SCM
-            </body></html>`
-    )
-}
-const getMailNotificationResponse = (transaction, alert, destination, type , typeName) => {
+const getMailNotificationResponse = (transaction, alert, destination, type, typeName) => {
     return {
         "title": alertType.ALERT_TYPE[alert.type].name,
-        "description": getMailBody(transaction, alert.type),
+        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction),
         "timestamp": transaction.timestamp,
         "userID": alert.userId,
         "postedTo": destination.url,
         "postedBy": 'XDC SCM',
-        "payload": { timestamp: transaction.timestamp, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network, userId: alert.userId ,typeName : typeName },
+        "payload": { timestamp: transaction.timestamp, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network, userId: alert.userId, typeName: typeName },
         "type": "email",
         "sentFromEmail": "XFLW@xinfin.org",
         "sentFromName": destination.label,
@@ -154,15 +143,15 @@ const getMailNotificationResponse = (transaction, alert, destination, type , typ
     }
 }
 const getDataObject = (transaction, alert, destination, type, typeName) => {
-    let data =  {
+    let data = {
         "title": alertType.ALERT_TYPE[alert.type].name,
         "description": getMessage(transaction, alert.type),
         "timestamp": transaction.timestamp,
         "userId": alert.userId,
-        "payload": { timestamp: transaction.timestamp, url: destination.url, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network, userId: alert.userId , typeName : typeName },
+        "payload": { timestamp: transaction.timestamp, url: destination.url, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network, userId: alert.userId, typeName: typeName },
 
-    } 
-     if (type === "SLACK") {
+    }
+    if (type === "SLACK") {
         let slackData = {
             "userID": alert.userId,
             "postedTo": destination.channelName || "#watchdogs",
@@ -177,21 +166,27 @@ const getDataObject = (transaction, alert, destination, type, typeName) => {
 }
 
 const getMessage = (transaction, type) => {
-    if (type === alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type)
-        return (
-            `A Successfull Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
-        )
-    else if (type === alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type)
-        return (
-            `A Failed Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
-        )
-    else if (type === alertType.ALERT_TYPE.TRANSACTION_VALUE.type)
-        return (
-            `Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
-        )
+    let message = '';
+    switch (type) {
+        case alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type:
+            message = `A Successfull Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+            break;
+        case alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type:
+            message = `A Failed Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+            break;
+        case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
+            message = `Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+            break;
+        default:
+            break;
+    }
+    return message;
 }
 
 const getTypeName = (alert) => {
-    if(alert.target.type === alertType.ALERT_TYPE.ADDRESS.type)
-      return (alert.target && alert.target.contract && alert.target.contract.contractName) || "Contract";       
+    if (alert.target.type === alertType.ALERT_TYPE.ADDRESS.type)
+        return (alert.target && alert.target.contract && alert.target.contract.contractName) || "Contract";
+    if (alert.target.type === alertType.ALERT_TYPE.TAG.type)
+        return (alert.target && alert.target.name) || "Tag";
+
 }
