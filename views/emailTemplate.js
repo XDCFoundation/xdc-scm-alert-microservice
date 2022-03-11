@@ -88,6 +88,17 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
           width:100%;
 
         }
+        .buttonAnchor {
+            color: white;
+            padding: 5px 0px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+              Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            width:100%;
+            text-decoration:none;
+  
+          }
         @media (min-width: 300px) and (max-width: 767px){
           .mainDiv{
             min-width: 320px;
@@ -139,7 +150,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
                 <span class="values">XDC Mainnet</span>
               </div>
             </div>
-            <a class="button" href=${Config.WEB_APP_URL}${transaction.hash}>View in Xmartly</a>
+           <div class="button"> <a class="buttonAnchor" href=${Config.WEB_APP_URL}${transaction.hash}>View in Xmartly</a> </div>
           </div>
         </div>
       </body>`
