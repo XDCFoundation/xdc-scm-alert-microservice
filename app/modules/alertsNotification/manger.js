@@ -13,6 +13,7 @@ export default class Manger {
     getTransactions = async (transactions) => {
         try {
             let addresses = []
+            //TODO: transactions.map and then use Set for array duplications
             for (let index = 0; index < transactions.length; index++) {
                 let cIndex = addresses.findIndex((address) => {
                     if (transactions[index].contractAddress === address)
@@ -22,12 +23,16 @@ export default class Manger {
                     addresses.push(transactions[index].contractAddress)
             }
             let contracts = await ContractSchema.getContracts({ "address": { $in: addresses }, isDeleted: false });
+            //TODO: Find Tags and contractAddress from above data
             let alerts = await AlertSchema.findData({ isDeleted: false, status: true });
             if (!alerts || !alerts.length) return;
+
             for (let alertIndex = 0; alertIndex < transactions.length; alertIndex++) {
                 let ifAlert = alerts.filter((item) => { if (item.target.value === transactions[alertIndex].contractAddress) return true; })
                 if (ifAlert) {
-                    for (let contractIndex = 0; contractIndex < ifAlert.length; contractIndex++) { await this.checkIfNotification(ifAlert[contractIndex], transactions[alertIndex]) }
+                    for (let contractIndex = 0; contractIndex < ifAlert.length; contractIndex++) {
+                        await this.checkIfNotification(ifAlert[contractIndex], transactions[alertIndex])
+                    }
                 }
                 let contractTags = [];
                 contracts.filter((item) => {
@@ -38,6 +43,7 @@ export default class Manger {
                 })
                 let mySet = new Set(contractTags)
                 contractTags = Array.from(mySet)
+                //TODO: Refactor Tags implementation with _id
                 if (contractTags && contractTags.length) {
                     for (let tagIndex = 0; tagIndex < contractTags.length; tagIndex++) {
                         let tagAlert = alerts.filter((item) => { if (item.target.value === contractTags[tagIndex]) return true; })
@@ -169,13 +175,13 @@ const getMessage = (transaction, type) => {
     let message = '';
     switch (type) {
         case alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type:
-            message = `A Successfull Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+            message = `A Successful Transaction happened on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
             break;
         case alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type:
-            message = `A Failed Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+            message = `A Failed Transaction happened on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
             break;
         case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
-            message = `Transaction happend on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
+            message = `Transaction happened on the Contract Address ${transaction.contractAddress} of ${transaction.value} XDC from the address ${transaction.from}.`
             break;
         default:
             break;
