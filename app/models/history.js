@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const historySchema = new mongoose.Schema({
     historyId: { type: String, default: '' },
-    userId: { type: String, default: '',ref: "xin-users" },
+    userId: { type: String, default: '' },
     title: {type: String, default: ''},
     payload: {type: mongoose.Schema.Types.Mixed, default: ''},
     description: {type: String, default: ''},
