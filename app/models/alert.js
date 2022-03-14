@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const alertSchema = new mongoose.Schema({
   alertId: { type: String, default: '' },
-  userId: { type: String, default: '',ref: "xin-users" },
+  userId: { type: String, default: '' },
   type: {
     type: String, default: '',
     enum: ["SUCCESSFULL_TRANSACTIONS",

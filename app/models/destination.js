@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const destinationSchema = new mongoose.Schema({
     destinationId: { type: String, default: '' },
-    userId: { type: String, default: '',ref: "xin-users" },
+    userId: { type: String, default: ''},
     type: {
         type: String, default: '',
         enum: ["EMAIL", "WEBHOOK", "SLACK"],
