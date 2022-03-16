@@ -1,7 +1,9 @@
 import Config from "../config";
-
+import moment from "moment" ;
 export default class EmailTemplate {
-static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
+
+static createEmail(alertType, alertTargetName, alertTargetValue , transaction, alertId) {
+
         const emailTemplate = `<head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -41,7 +43,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
         }
         .heading {
           color: #1f1f1f;
-          font-size: larger;
+          font-size: 1.5rem;
           font-weight: 700;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -52,8 +54,8 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
           color: #1f1f1f;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-          font-weight: 600;
-          font-size: 15px;
+          font-weight: bold;
+          font-size: 0.875rem;
         }
         .values {
           padding-left: 10px;
@@ -62,14 +64,17 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
           font-weight: 400;
-          font-size: 15px;
+          font-size: 0.875rem;
+        }
+        .alertType {
+          color : #416BE0
         }
         .flexDiv {
           display: flex;
         }
         .container {
-          padding: 20px;
-          padding-left: 0px;
+          padding: 20px 0px 0px 0px;
+          border-bottom: 1px solid #D9D9D9;
         }
         .button {
           background-color: #416be0;
@@ -77,7 +82,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
           border-radius: 4px;
           outline:none;
           border:none;
-          align-content: center;
+          text-align: center;
           justify-content: center;
           color: white;
           padding: 5px 0px;
@@ -89,7 +94,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
 
         }
         .buttonAnchor {
-            color: white;
+            color: white !important;
             padding: 5px 0px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
               Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -117,7 +122,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
             <div class="container">
               <div class="flexDiv">
                 <span class="content">${alertTargetName}</span>
-                <span class="values">${alertTargetValue}</span>
+                <span class="values alertType">${alertTargetValue}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Name:</span>
@@ -129,12 +134,16 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
             <div class="container">
               <div class="flexDiv">
                 <span class="content">When:</span>
-                <span class="values">${transaction.timestamp}</span>
+                <span class="values">${moment.utc(transaction.timestamp).format("MMM DD YYYY")}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Type:</span>
                 <span class="values">${alertType}</span>
               </div>
+              <div class="flexDiv">
+                <span class="content">ID:</span>
+                <span class="values">${alertId}</span>
+              </div> 
             </div>
             <div class="container">
               <div class="flexDiv">
@@ -143,7 +152,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction) {
               </div>
               <div class="flexDiv">
                 <span class="content">Transaction Hash:</span>
-                <span class="values">${transaction.hash}</span>
+                <span class="values">${transaction.hash.replace(/(.{7})..(.{7})+/, "$1…")}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Network:</span>
