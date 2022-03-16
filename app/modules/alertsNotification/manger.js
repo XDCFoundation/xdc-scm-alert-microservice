@@ -149,7 +149,7 @@ const sendDataToQueue = async (transaction, alert) => {
 const getMailNotificationResponse = (transaction, alert, destination, type, typeName) => {
     return {
         "title": alertType.ALERT_TYPE[alert.type].name,
-        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction),
+        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction , alert._id),
         "timestamp": transaction.timestamp,
         "userID": alert.userId,
         "postedTo": destination.url,
