@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+import { Schema } from "mongoose";
+mongoose.model("xin-contract", new Schema({}));
 
 const alertSchema = new mongoose.Schema({
   alertId: { type: String, default: '' },
