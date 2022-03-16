@@ -203,6 +203,7 @@ const getMessage = (transaction, type) => {
 }
 
 const getTypeName = (alert) => {
+    alert = alert.toJSON();
     if (alert.target.type === alertType.ALERT_TYPE.ADDRESS.type)
         return (alert.target && alert.target.contract && alert.target.contract.contractName) || "Contract";
     if (alert.target.type === alertType.ALERT_TYPE.TAG.type)
