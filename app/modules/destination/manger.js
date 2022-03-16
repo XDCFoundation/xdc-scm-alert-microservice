@@ -1,4 +1,5 @@
 import DestinationSchema from "../../models/destination";
+import AlertSchema from "../../models/alert";
 import { httpConstants } from "../../common/constants";
 import Utils from "../../utils";
 export default class Manger {
@@ -21,6 +22,7 @@ export default class Manger {
         return await DestinationSchema.findData(requestData ? requestData : {});
     }
     deleteDestination = async (requestData) => {
-        return await DestinationSchema.findOneAndUpdateData({ destinationId: requestData.destinationId }, { isDeleted: true });
+       await AlertSchema.updateMany({},{ $pull: { destinations: requestData.destinationId } });
+       return await DestinationSchema.findOneAndUpdateData({ destinationId: requestData.destinationId }, { isDeleted: true });
     }
 }
