@@ -1,10 +1,10 @@
 import Config from "../config";
 import moment from "moment" ;
+
 export default class EmailTemplate {
 
 static createEmail(alertType, alertTargetName, alertTargetValue , transaction, alertId) {
-
-        const emailTemplate = `<head>
+         const emailTemplate = `<head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +67,12 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
           font-size: 0.875rem;
         }
         .alertType {
+          padding-left: 10px;
+          padding-bottom: 10px;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+            Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+          font-weight: 400;
+          font-size: 0.875rem;
           color : #416BE0
         }
         .flexDiv {
@@ -75,6 +81,9 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
         .container {
           padding: 20px 0px 0px 0px;
           border-bottom: 1px solid #D9D9D9;
+        }
+        .lastContainer {
+          padding: 20px 0px 0px 0px;
         }
         .button {
           background-color: #416be0;
@@ -115,14 +124,14 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
       <body style = "background-color: #f8f8f8">
         <div class="mainDiv">
           <div class="header">
-            <img src="../../../public/images/Logo.svg" alt="" />
+            <img src="" alt="" />
           </div>
           <div class="contentDiv">
             <div class="heading">${alertType}</div>
             <div class="container">
               <div class="flexDiv">
                 <span class="content">${alertTargetName}</span>
-                <span class="values alertType">${alertTargetValue}</span>
+                <span class="values">${alertTargetValue}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Name:</span>
@@ -134,25 +143,25 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
             <div class="container">
               <div class="flexDiv">
                 <span class="content">When:</span>
-                <span class="values">${moment.utc(transaction.timestamp).format("MMM DD YYYY")}</span>
+                <span class="values">${moment().utc(transaction.timestamp).format("MMM DD YYYY")}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Type:</span>
-                <span class="values">${alertType}</span>
+                <span class="alertType">${alertType}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">ID:</span>
                 <span class="values">${alertId}</span>
               </div> 
             </div>
-            <div class="container">
+            <div class="lastContainer">
               <div class="flexDiv">
                 <span class="content">${alertTargetName}</span>
                 <span class="values">${alertTargetValue}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Transaction Hash:</span>
-                <span class="values">${transaction.hash.replace(/(.{7})..(.{7})+/, "$1…")}</span>
+                <span class="values">${transaction.hash.replace(/(.{7})..(.{10})+/, "$1…")}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Network:</span>
