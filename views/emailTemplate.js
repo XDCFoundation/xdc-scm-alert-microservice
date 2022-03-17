@@ -124,7 +124,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
       <body style = "background-color: #f8f8f8">
         <div class="mainDiv">
           <div class="header">
-            <img src="https://xdc-scm-dev.s3.amazonaws.com/Logo.svg" alt="" />
+            <img src="https://xdc-scm-dev.s3.amazonaws.com/Logo.png" alt="" />
           </div>
           <div class="contentDiv">
             <div class="heading">${alertType}</div>
