@@ -13,7 +13,7 @@ export default class Manger {
         })
         if (getAlert) {
             if (getAlert.isDeleted === true)
-                return await AlertSchema.findOneAndUpdateData({ alertId: getAlert.alertId }, { isDeleted: false });
+                return await AlertSchema.findOneAndUpdateData({ alertId: getAlert.alertId }, { isDeleted: false , destinations:requestData.destinations });
             else
                 throw Utils.error({}, `Alert already exists`, httpConstants.RESPONSE_CODES.FORBIDDEN);
         }
@@ -33,6 +33,6 @@ export default class Manger {
     updateAlert = async (param , request) => {
         return await AlertSchema.findOneAndUpdateData({ alertId: param.alertId }, request);
     }
-    
+
 
 }
