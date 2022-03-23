@@ -1,8 +1,10 @@
 const mongoose = require('mongoose')
+import { Schema } from "mongoose";
+mongoose.model("xin-contract", new Schema({}));
 
 const alertSchema = new mongoose.Schema({
   alertId: { type: String, default: '' },
-  userId: { type: String, default: '',ref: "xin-users" },
+  userId: { type: String, default: '' },
   type: {
     type: String, default: '',
     enum: ["SUCCESSFULL_TRANSACTIONS",
@@ -42,7 +44,9 @@ alertSchema.static({
       url:1,
       label:1,
       channelName:1
-    }).populate("target.contractId");
+    }).populate("target.contract",{
+      contractName:1
+    });
   },
   findOneData: function (findObj) {
     return this.findOne(findObj).populate("destinations",{

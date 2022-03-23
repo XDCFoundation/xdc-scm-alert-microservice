@@ -22,8 +22,7 @@ export default class Manger {
         return await DestinationSchema.findData(requestData ? requestData : {});
     }
     deleteDestination = async (requestData) => {
-        let destination= await DestinationSchema.findOneAndUpdateData({ destinationId: requestData.destinationId }, { isDeleted: true });
-        let alert= await AlertSchema.findOneAndUpdateData({ "destinations": requestData.destinationId }, {"destinations":""});
-        return {destination,alert}
+       await AlertSchema.updateMany({},{ $pull: { destinations: requestData.destinationId } });
+       return await DestinationSchema.findOneAndUpdateData({ destinationId: requestData.destinationId }, { isDeleted: true });
     }
 }

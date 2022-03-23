@@ -9,7 +9,7 @@ module.exports = {
       target: yup.object().shape({
          type:  yup.string().required(),
          value: yup.string().required(),
-         name:  yup.string().required(),
+         name:  yup.string(),
          network:  yup.string().required(),
          threshold : yup.string()
       }),
