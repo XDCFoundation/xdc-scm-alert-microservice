@@ -130,7 +130,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
             <div class="heading">${alertType}</div>
             <div class="container">
               <div class="flexDiv">
-                <span class="content">${alertTargetName}</span>
+                <span class="content">${alertTargetName}:</span>
                 <span class="values">${alertTargetValue}</span>
               </div>
               <div class="flexDiv">
@@ -155,10 +155,6 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
               </div> 
             </div>
             <div class="lastContainer">
-              <div class="flexDiv">
-                <span class="content">${alertTargetName}</span>
-                <span class="values">${alertTargetValue}</span>
-              </div>
               <div class="flexDiv">
                 <span class="content">Transaction Hash:</span>
                 <span class="values">${transaction.hash.replace(/(.{7})..(.{10})+/, "$1…")}</span>

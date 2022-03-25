@@ -106,7 +106,7 @@ export const amqpConstants = {
 
 export const alertType = {
   ALERT_TYPE:{
-    SUCCESSFULL_TRANSACTIONS:{type:"SUCCESSFULL_TRANSACTIONS" , name:"Successfull Transaction"},
+    SUCCESSFULL_TRANSACTIONS:{type:"SUCCESSFULL_TRANSACTIONS" , name:"Successful Transaction"},
     FAILED_TRANSACTIONS:{type:"FAILED_TRANSACTIONS" , name:"Failed Transaction"},
     TOKEN_TRANSFER:{type:"TOKEN_TRANSFER" , name:"Token Transfer"},
     TRANSACTION_VALUE:{type:"TRANSACTION_VALUE" , name:"Value"},
