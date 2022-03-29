@@ -1,0 +1,285 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0",
+        "title": "Alert MicroService",
+        "description": "MicroService to manage alerts in the system",
+        "license": {
+            "name": "Leewayhertz",
+            "url": "http://leewayhertz.com"
+        }
+    },
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/alert": {
+            "post": {
+                "description": "Add Alert",
+                "summary": "Add Alert",
+                "tags": [
+                    "Alerts"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Add Alert",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/AddAlert"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/alert-list": {
+            "post": {
+                "description": "Get List of Alerts",
+                "summary": "Get List of Alerts",
+                "tags": [
+                    "Alerts"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/alert/{alertId}": {
+            "get": {
+                "description": "Get Alert",
+                "summary": "Get Alert for given alertId",
+                "tags": [
+                    "Alerts"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "alertId",
+                        "in": "path",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Alert",
+                "summary": "Delete Alert for given alertId",
+                "tags": [
+                    "Alerts"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "alertId",
+                        "in": "path",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Alert",
+                "summary": "Update Alert for given alertId",
+                "tags": [
+                    "Alerts"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "alertId",
+                        "in": "path",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/destination": {
+            "post": {
+                "description": "Add Destination",
+                "summary": "Add Destination to system",
+                "tags": [
+                    "Destinations"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "destination",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Destination"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/destination-list": {
+            "post": {
+                "description": "Get List of destinations",
+                "summary": "Get List of destinations",
+                "tags": [
+                    "Destinations"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/destination/{destinationId}": {
+            "delete": {
+                "description": "Delete destination for given destinationId",
+                "summary": "Delete destination for given destinationId",
+                "tags": [
+                    "Destinations"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "destinationId",
+                        "in": "path",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/history-list": {
+            "delete": {
+                "description": "Get Paginated List of History for User",
+                "summary": "Get Paginated List of History for User",
+                "tags": [
+                    "History"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+
+    },
+    "definitions": {
+        "AddAlert": {
+            "properties": {
+                "alertId": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "object"
+                },
+                "destinations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                      }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+
+        "Destination": {
+            "properties": {
+                "userId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "channelName": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+                
+            }
+        }
+    }
+}

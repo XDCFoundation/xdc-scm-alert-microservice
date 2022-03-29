@@ -6,9 +6,16 @@ import AlertModule from "../app/modules/alerts";
 import DestinationModule from "../app/modules/destination";
 import HistoryModule from "../app/modules/history";
 import {stringConstants} from "../app/common/constants";
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '../config/swagger.json';
 
 module.exports = (app) => {
     app.get('/', (req, res) => res.send(stringConstants.SERVICE_STATUS_HTML));
+    
+    /**
+     * create swagger UI
+     * **/
+    app.use('/swagger-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     /**
      * Alert definition
