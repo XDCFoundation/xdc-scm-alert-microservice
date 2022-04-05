@@ -147,7 +147,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Type:</span>
-                <span class="alertType">${alertType}</span>
+                <span class="values">${alertType}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">ID:</span>
