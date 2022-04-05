@@ -164,7 +164,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
                 <span class="values">XDC Mainnet</span>
               </div>
             </div>
-           <div class="button"> <a class="buttonAnchor" href=${Config.WEB_APP_URL}${transaction.hash}>View in Xmartly</a> </div>
+           <div class="button"> <a class="buttonAnchor" href=${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}>View in Xmartly</a> </div>
           </div>
         </div>
       </body>`

@@ -4,7 +4,7 @@ import moment from "moment" ;
 export default class EmailTemplate {
 
 static createEmail(request , sessionToken) {
-   const url = `http://localhost:3000/alerting?type=Destination&destinationId=${request.destinationId}&sessionToken=${sessionToken}`
+   const url = `${Config.WEB_APP_URL}/alerting?type=Destination&destinationId=${request.destinationId}&sessionToken=${sessionToken}`
          const emailTemplate = `<head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
