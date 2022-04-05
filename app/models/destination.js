@@ -42,6 +42,10 @@ destinationSchema.static({
     },
     findDataWithAggregate: function (findObj) {
         return this.aggregate(findObj)
-    }
+    },
+    findOneAndRemoveData: function (findObj) {
+        return this.findOneAndDelete(findObj)
+    },
+
 })
 export default mongoose.model('xin-destination', destinationSchema)
