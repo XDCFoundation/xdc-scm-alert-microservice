@@ -10,7 +10,11 @@ const destinationSchema = new mongoose.Schema({
     label: { type: String, default: '' },
     url: { type: String, default: '' },
     channelName: { type: String, default: '' },
-    status: { type: String, default: '' },
+    sessionToken: { type: String, default: '' },
+    status: { 
+        type: String, default: '',
+        enum: ["VERIFIED", "UNVERIFIED", "CONNECTED", "NOT_CONNECTED"],
+    },
     isDeleted: { type: Boolean, default: false },
     isInActive: { type: Boolean, default: false },
     addedOn: { type: Number, default: Date.now() },

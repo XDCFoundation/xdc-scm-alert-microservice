@@ -123,5 +123,11 @@ export const alertType = {
     EMAIL:{type:"EMAIL" },
     WEBHOOK:{type:"WEBHOOK"},
     SLACK:{type:"SLACK"},
+  },
+  DESTINATIOM_STATUS:{
+    VERIFIED: "VERIFIED", 
+    UNVERIFIED: "UNVERIFIED",
+    CONNECTED: "CONNECTED", 
+    NOT_CONNECTED: "NOT_CONNECTED"
   }
 }
