@@ -24,7 +24,21 @@ module.exports = {
       url:  yup.string().required(),
     })
     await validate(schema, req.body, res, next)
-  }
+  },
+  validateVerifyEmail: async (req, res, next) => {
+    const schema = yup.object().shape({
+      destinationId:  yup.string().required(),
+      sessionToken: yup.string().required(),
+    })
+    await validate(schema, req.body, res, next)
+  },
+  validateResendEmail: async (req, res, next) => {
+    const schema = yup.object().shape({
+      destinationId:  yup.string().required(),
+      url: yup.string().required(),
+    })
+    await validate(schema, req.body, res, next)
+  },
 }
 
 const validate = async (schema, reqData, res, next) => {
