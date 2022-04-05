@@ -30,9 +30,12 @@ module.exports = (app) => {
     /**
      * Destination definition
      */
-    app.post("/destination", authenticate, ValidationManger.validateAddDestination, new DestinationModule().addDestination);
+    app.post("/destination", ValidationManger.validateAddDestination, new DestinationModule().addDestination);
     app.post("/destination-list", authenticate, new DestinationModule().getDestinations);
     app.delete("/destination/:destinationId", authenticate, new DestinationModule().deleteDestination);
+    app.post("/verify-email", new DestinationModule().verifyEmail);
+    app.post("/resend-email", new DestinationModule().resendEmail);
+
 
     /**
      * History definition

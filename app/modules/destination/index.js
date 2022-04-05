@@ -21,4 +21,16 @@ export default class Index {
     if (!getMetersRes) { return Utils.handleError(error, request, response) }
     return Utils.response(response, getMetersRes, apiSuccessMessage.FETCH_SUCCESS, httpConstants.RESPONSE_STATUS.SUCCESS, httpConstants.RESPONSE_CODES.OK)
   }
+  async verifyEmail (request, response) {
+    lhtWebLog('Inside verifyEmail', request.body, 'verifyEmail', 0, '')
+    const [error, getMetersRes] = await Utils.parseResponse(new BLManager().verifyEmail(request.body))
+    if (!getMetersRes) { return Utils.handleError(error, request, response) }
+    return Utils.response(response, getMetersRes, apiSuccessMessage.FETCH_SUCCESS, httpConstants.RESPONSE_STATUS.SUCCESS, httpConstants.RESPONSE_CODES.OK)
+  }
+  async resendEmail (request, response) {
+    lhtWebLog('Inside resendEmail', request.body, 'resendEmail', 0, '')
+    const [error, getMetersRes] = await Utils.parseResponse(new BLManager().resendEmail(request.body))
+    if (!getMetersRes) { return Utils.handleError(error, request, response) }
+    return Utils.response(response, getMetersRes, apiSuccessMessage.FETCH_SUCCESS, httpConstants.RESPONSE_STATUS.SUCCESS, httpConstants.RESPONSE_CODES.OK)
+  }
 }
