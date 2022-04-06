@@ -228,6 +228,42 @@
                     }
                 }
             }
+        },
+        "/verify-email": {
+            "post": {
+                "description": "Verify Email for destination",
+                "summary": "Verify Email for destination",
+                "tags": [
+                    "Destinations"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/resend-email": {
+            "post": {
+                "description": "Resend Verification Email for destination",
+                "summary": "Resend Verification  Email for destination",
+                "tags": [
+                    "Destinations"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
         }
 
     },
