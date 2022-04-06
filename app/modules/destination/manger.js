@@ -28,7 +28,7 @@ export default class Manger {
         }
         if (requestData.type === 'SLACK') {
             await this.verifySlack(requestData);
-            destinationObject["status"] = alertType.DESTINATIOM_STATUS.CONNECTED.type
+            destinationObject["status"] = alertType.DESTINATIOM_STATUS.CONNECTED
         }
         return await destinationObject.saveData();
     }
