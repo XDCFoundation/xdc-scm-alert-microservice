@@ -127,20 +127,40 @@ const sendDataToQueue = async (transaction, alert) => {
         Utils.lhtLog("sendDataToQueue", `Destinations for alert ${alert._id}`, dest, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
 
         for (let index = 0; index < dest.length; index++) {
-            if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
-                let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName);
-                Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO);
-                await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
-            }
-            else if (dest[index].type === alertType.DESTINATION_TYPE.SLACK.type) {
-                let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
-                Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-                await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
-            }
-            else if (dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type) {
-                let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
-                Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-                await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url, slackNotificationRes, {})
+            if (destination.status === alertType.DESTINATIOM_STATUS.VERIFIED || destination.status === alertType.DESTINATIOM_STATUS.CONNECTED) {
+                switch (dest[index].type) {
+                    case alertType.DESTINATION_TYPE.EMAIL.type:
+                        let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName);
+                        Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO);
+                        await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
+                        break;
+                    case alertType.DESTINATION_TYPE.SLACK.type:
+                        let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
+                        Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                        await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
+                        break;
+                    case alertType.DESTINATION_TYPE.WEBHOOK.type:
+                        let webhookNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
+                        Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", webhookNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                        await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url, webhookNotificationRes, {})
+                    default:
+                        break;
+                }
+                // if (dest[index].type === alertType.DESTINATION_TYPE.EMAIL.type) {
+                //     let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName);
+                //     Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO);
+                //     await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
+                // }
+                // else if (dest[index].type === alertType.DESTINATION_TYPE.SLACK.type) {
+                //     let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
+                //     Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                //     await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
+                // }
+                // else if (dest[index].type === alertType.DESTINATION_TYPE.WEBHOOK.type) {
+                //     let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
+                //     Utils.lhtLog("sendDataToQueue", "webhookNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
+                //     await executeHTTPRequest(httpConstants.METHOD_TYPE.POST, dest[index].url, slackNotificationRes, {})
+                // }
             }
         }
     }
@@ -149,7 +169,7 @@ const sendDataToQueue = async (transaction, alert) => {
 const getMailNotificationResponse = (transaction, alert, destination, type, typeName) => {
     return {
         "title": alertType.ALERT_TYPE[alert.type].name,
-        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction , alert._id),
+        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction, alert._id),
         "timestamp": transaction.timestamp,
         "userID": alert.userId,
         "postedTo": destination.url,
