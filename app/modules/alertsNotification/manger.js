@@ -127,7 +127,7 @@ const sendDataToQueue = async (transaction, alert) => {
         Utils.lhtLog("sendDataToQueue", `Destinations for alert ${alert._id}`, dest, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
 
         for (let index = 0; index < dest.length; index++) {
-            if (dest.status === alertType.DESTINATIOM_STATUS.VERIFIED || dest.status === alertType.DESTINATIOM_STATUS.CONNECTED) {
+            if (dest[index].status === alertType.DESTINATIOM_STATUS.VERIFIED || dest[index].status === alertType.DESTINATIOM_STATUS.CONNECTED) {
                 switch (dest[index].type) {
                     case alertType.DESTINATION_TYPE.EMAIL.type:
                         let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName);

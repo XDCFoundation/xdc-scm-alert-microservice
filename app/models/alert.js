@@ -43,7 +43,8 @@ alertSchema.static({
       type:1,
       url:1,
       label:1,
-      channelName:1
+      channelName:1,
+      status:1
     }).populate("target.contract",{
       contractName:1
     });
