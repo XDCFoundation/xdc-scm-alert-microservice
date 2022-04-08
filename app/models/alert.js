@@ -74,6 +74,9 @@ alertSchema.static({
   },
   findOneDataAndDelete: function (findObj) {
     return this.findOneAndDelete(findObj)
+  },
+  updateManyAlerts: function (findObj, updateObj) {
+    return this.updateMany(findObj, updateObj);
   }
 })
 export default mongoose.model('xin-alert', alertSchema)
