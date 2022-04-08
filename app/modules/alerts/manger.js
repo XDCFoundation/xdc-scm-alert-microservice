@@ -13,7 +13,7 @@ export default class Manger {
         })
         if (getAlert) {
             if (getAlert.isDeleted === true)
-                return await AlertSchema.findOneAndUpdateData({ alertId: getAlert.alertId }, { isDeleted: false , destinations:requestData.destinations });
+                return await AlertSchema.findOneAndUpdateData({ alertId: getAlert.alertId }, { isDeleted: false, destinations: requestData.destinations });
             else
                 throw Utils.error({}, `Alert already exists`, httpConstants.RESPONSE_CODES.FORBIDDEN);
         }
@@ -28,11 +28,23 @@ export default class Manger {
         return await AlertSchema.findOneData({ alertId: requestData.alertId });
     }
     deleteAlert = async (requestData) => {
-        return await AlertSchema.findOneAndUpdateData({ alertId: requestData.alertId }, { isDeleted: true  , destinations : []});
+        return await AlertSchema.findOneAndUpdateData({ alertId: requestData.alertId }, { isDeleted: true, destinations: [], status: true });
     }
-    updateAlert = async (param , request) => {
+    updateAlert = async (param, request) => {
         return await AlertSchema.findOneAndUpdateData({ alertId: param.alertId }, request);
     }
+    removeContractAlerts = async ({ userId, contractAddress, tags }) => {
+        return await AlertSchema.updateManyAlerts(
+            {
+                $and: [
+                    { userId: userId },
+                    { $or: [{ 'target.value': contractAddress }, { 'target.value': { $in: tags } }] }
+
+                ]
+            }
+            , { isDeleted: true, destinations: [], status: true });
+    }
+
 
 
 }

@@ -26,6 +26,8 @@ module.exports = (app) => {
     app.get("/alert/:alertId", authenticate, new AlertModule().getAlert);
     app.delete("/alert/:alertId", authenticate, new AlertModule().deleteAlert);
     app.put("/alert/:alertId", authenticate, new AlertModule().updateAlert);
+    app.put("/remove-contract-alerts",  new AlertModule().removeContractAlerts);
+
 
     /**
      * Destination definition
