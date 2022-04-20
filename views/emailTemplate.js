@@ -80,7 +80,6 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
         }
         .container {
           padding: 20px 0px 0px 0px;
-          border-bottom: 1px solid #D9D9D9;
         }
         .lastContainer {
           padding: 20px 0px 0px 0px;
@@ -143,7 +142,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
             <div class="container">
               <div class="flexDiv">
                 <span class="content">When:</span>
-                <span class="values">${moment().utc(transaction.timestamp).format("MMM DD YYYY")}</span>
+                <span class="values">${moment(transaction.timestamp * 1000).utc().format("lll")}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Type:</span>

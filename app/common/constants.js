@@ -114,7 +114,7 @@ export const alertType = {
     XDC_BALANCE:{type:"XDC_BALANCE" , name:"Balance"},
     STATE_CHANGE:{type:"STATE_CHANGE" , name:"State Change"},
     FUNCTION_CALL:{type:"FUNCTION_CALL" , name:"Function Call"},
-    ADDRESS:{type:"ADDRESS" , name:"Contract"},
+    ADDRESS:{type:"ADDRESS" , name:"Contract Address"},
     TAG:{type:"TAG" , name:"Tag"},
     NETWORK:{type:"NETWORK" , name:"Network"},
 
