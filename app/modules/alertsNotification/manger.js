@@ -208,13 +208,13 @@ const getMessage = (transaction, type) => {
     let message = '';
     switch (type) {
         case alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type:
-            message = `A Successful Transaction ${transaction.hash} happened on the Contract Address ${transaction.contractAddress} from the address ${transaction.from}. View Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `A Successful Transaction \n\n${transaction.hash} \n\nhappened on the Contract Address \n\n${transaction.contractAddress} from the address \n\n${transaction.from}.\n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         case alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type:
-            message = `A Failed Transaction ${transaction.hash} happened on the Contract Address ${transaction.contractAddress}  from the address ${transaction.from}. View Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `A Failed Transaction \n\n${transaction.hash} \n\nhappened on the Contract Address \n\n${transaction.contractAddress}  from the address \n\n${transaction.from}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
-            message = `Transaction ${transaction.hash} happened on the Contract Address ${transaction.contractAddress}  from the address ${transaction.from}. View Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `Transaction \n\n${transaction.hash} \n\nhappened on the Contract Address \n\n${transaction.contractAddress}  from the address \n\n${transaction.from}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         default:
             break;
