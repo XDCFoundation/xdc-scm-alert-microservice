@@ -46,7 +46,8 @@ alertSchema.static({
       channelName:1,
       status:1
     }).populate("target.contract",{
-      contractName:1
+      contractName:1,
+      address:1
     });
   },
   findOneData: function (findObj) {
