@@ -3,7 +3,7 @@ import moment from "moment" ;
 
 export default class EmailTemplate {
 
-static createEmail(alertType, alertTargetName, alertTargetValue , transaction, alertId) {
+static createEmail(alertType, alertTargetName, alertTargetValue , transaction, alertId, contractAddress) {
          const emailTemplate = `<head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,6 +47,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
           font-weight: 700;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
             Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+          margin-bottom: 20px;
         }
         .content {
           padding-left: 0px;
@@ -66,6 +67,15 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
           font-weight: 400;
           font-size: 0.875rem;
         }
+        .values-blue {
+          padding-left: 10px;
+          padding-bottom: 10px;
+          color: #416BE0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+            Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+          font-weight: 400;
+          font-size: 0.875rem;
+        }
         .alertType {
           padding-left: 10px;
           padding-bottom: 10px;
@@ -79,10 +89,10 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
           display: flex;
         }
         .container {
-          padding: 20px 0px 0px 0px;
+          padding: 0px;
         }
         .lastContainer {
-          padding: 20px 0px 0px 0px;
+          padding: 0px;
         }
         .button {
           background-color: #416be0;
@@ -117,6 +127,17 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
             min-width: 320px;
             min-height: 320px;
           }
+          .values {
+            padding-left: 4px;
+            font-size: 12px;
+          }
+          .values-blue {
+            padding-left: 4px;
+            font-size: 12px;
+          }
+          .content{
+            font-size: 12px;
+          }
         }
       </style>
       </head>
@@ -130,7 +151,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
             <div class="container">
               <div class="flexDiv">
                 <span class="content">${alertTargetName}:</span>
-                <span class="values">${alertTargetValue}</span>
+                <span class="values-blue">${alertTargetName === "Tag" ? alertTargetValue : contractAddress}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Name:</span>
@@ -146,7 +167,7 @@ static createEmail(alertType, alertTargetName, alertTargetValue , transaction, a
               </div>
               <div class="flexDiv">
                 <span class="content">Alert Type:</span>
-                <span class="values">${alertType}</span>
+                <span class="values-blue">${alertType}</span>
               </div>
               <div class="flexDiv">
                 <span class="content">ID:</span>

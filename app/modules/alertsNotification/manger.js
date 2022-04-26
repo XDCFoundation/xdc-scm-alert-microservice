@@ -169,7 +169,7 @@ const sendDataToQueue = async (transaction, alert) => {
 const getMailNotificationResponse = (transaction, alert, destination, type, typeName) => {
     return {
         "title": alertType.ALERT_TYPE[alert.type].name,
-        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction, alert._id),
+        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction, alert._id, transaction.contractAddress),
         "timestamp": transaction.timestamp,
         "userID": alert.userId,
         "postedTo": destination.url,
@@ -225,7 +225,7 @@ const getMessage = (transaction, type) => {
 const getTypeName = (alert) => {
     alert = alert.toJSON();
     if (alert.target.type === alertType.ALERT_TYPE.ADDRESS.type)
-        return (alert.target && alert.target.contract && alert.target.contract.address) || "Contract";
+        return (alert.target && alert.target.contract && alert.target.contract.contractName) || "Contract";
     if (alert.target.type === alertType.ALERT_TYPE.TAG.type)
         return (alert.target && alert.target.name) || "Tag";
 
