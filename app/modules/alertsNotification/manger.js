@@ -7,6 +7,7 @@ import Utils from "../../utils";
 import { executeHTTPRequest } from "../../service/http-service";
 import XdcService from "../../service/xdcService";
 import EmailTemplate from '../../../views/emailTemplate';
+import { comparator } from "../../common/constants";
 
 export default class Manger {
 
@@ -86,10 +87,89 @@ export default class Manger {
 
                 break;
             case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
-                if (transaction.value === alert.target.threshold) {
-                    Utils.lhtLog("checkForNotification", `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`, {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
-                    await sendDataToQueue(transaction, alert)
+                let transferValue = this.getTransferValueFromInput(transaction);
+                transferValue = transferValue/(Math.pow(10, alert.target.contract._doc.decimals));
+
+                switch (alert.target.comparator) {
+                  case comparator.EQUAL_TO:
+                    if (transferValue === alert.target.threshold) {
+                      Utils.lhtLog(
+                        "checkForNotification",
+                        `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`,
+                        {},
+                        "kajal",
+                        httpConstants.LOG_LEVEL_TYPE.INFO
+                      );
+                      await sendDataToQueue(transaction, alert);
+                    }
+                    break;
+
+                  case comparator.NOT_EQUAL_TO:
+                    if (transferValue !== alert.target.threshold) {
+                        Utils.lhtLog(
+                          "checkForNotification",
+                          `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`,
+                          {},
+                          "kajal",
+                          httpConstants.LOG_LEVEL_TYPE.INFO
+                        );
+                        await sendDataToQueue(transaction, alert);
+                      }
+                    break;
+
+                  case comparator.GREATER_EQUAL_TO:
+                    if (transferValue >= alert.target.threshold) {
+                        Utils.lhtLog(
+                          "checkForNotification",
+                          `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`,
+                          {},
+                          "kajal",
+                          httpConstants.LOG_LEVEL_TYPE.INFO
+                        );
+                        await sendDataToQueue(transaction, alert);
+                      }
+                    break;
+
+                  case comparator.GREATER_THAN:
+                    if (transferValue > alert.target.threshold) {
+                        Utils.lhtLog(
+                          "checkForNotification",
+                          `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`,
+                          {},
+                          "kajal",
+                          httpConstants.LOG_LEVEL_TYPE.INFO
+                        );
+                        await sendDataToQueue(transaction, alert);
+                      }
+                    break;
+
+                  case comparator.LESS_EQUAL_TO:
+                    if (transferValue <= alert.target.threshold) {
+                        Utils.lhtLog(
+                          "checkForNotification",
+                          `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`,
+                          {},
+                          "kajal",
+                          httpConstants.LOG_LEVEL_TYPE.INFO
+                        );
+                        await sendDataToQueue(transaction, alert);
+                      }
+                    break;
+                    
+                  case comparator.LESS_THAN:
+                    if (transferValue < alert.target.threshold) {
+                        Utils.lhtLog(
+                          "checkForNotification",
+                          `Alert found for ${alertType.ALERT_TYPE.TRANSACTION_VALUE.type} in ${transaction.contractAddress}`,
+                          {},
+                          "kajal",
+                          httpConstants.LOG_LEVEL_TYPE.INFO
+                        );
+                        await sendDataToQueue(transaction, alert);
+                      }
+                    break;
                 }
+                
                 break;
             case alertType.ALERT_TYPE.XDC_BALANCE.type:
 
@@ -109,6 +189,54 @@ export default class Manger {
     getDistinctDatafromArray = (array) => {
         array = new Set(array);
         return Array.from(array)
+    }
+
+    getTransferValueFromInput = (transaction) => {
+        let transferValue = 0;
+        const ERC20_METHOD_DIC = {
+            "0xa9059cbb": "transfer",
+            "0xa978501e": "transferFrom",
+            "0x40c10f19": "mint",
+            "0x8456cb59": "pause",
+            "0x3f4ba83a": "resume",
+            "0xf1c064af": "ownership",
+            "0x42966c68": "burn"
+            };
+
+        const methodCode = transaction.input.substr(0, 10);
+        switch(ERC20_METHOD_DIC[methodCode]) {
+            case "transfer":
+                // Token transfer transaction
+                transferValue = Number(`0x${transaction.input.substring(74)}`);
+                break;
+            case "transferFrom":
+                // transferFrom
+                transferValue = Number(`0x${transaction.input.substring(114)}`);
+                break;
+            case "mint":
+                //mint
+                transferValue = Number(`0x${transaction.input.substring(114)}`);
+                break;
+            case "pause":
+                //pause
+                transferValue = 0;
+                break;
+            case "resume":
+                //resume
+                transferValue = 0;
+                break;
+            case "ownership":
+                //ownership
+                transferValue = 0;
+                break;
+            case "burn":
+                //burn
+                transferValue = Number(`0x${transaction.input.substring(46)}`);
+                break;
+            default:
+                transferValue = Number(`0x${transaction.input.substring(114)}`);
+        }
+        return transferValue;
     }
 
 }

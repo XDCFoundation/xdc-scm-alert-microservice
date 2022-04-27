@@ -131,3 +131,12 @@ export const alertType = {
     NOT_CONNECTED: "NOT_CONNECTED"
   }
 }
+
+export const comparator = {
+  EQUAL_TO: "EQUAL_TO",
+  NOT_EQUAL_TO: "NOT_EQUAL_TO",
+  GREATER_EQUAL_TO: "GREATER_EQUAL_TO",
+  GREATER_THAN: "GREATER_THAN",
+  LESS_EQUAL_TO: "LESS_EQUAL_TO",
+  LESS_THAN: "LESS_THAN"
+}
