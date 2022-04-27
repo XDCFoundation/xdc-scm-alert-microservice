@@ -20,8 +20,9 @@ const alertSchema = new mongoose.Schema({
      value:{ type:String, default: ""},
      name: { type:String, default: "" },
      network: { type:String, default: "" },
-     threshold :{ type:String, default: ""},
-     contract : { type: mongoose.Types.ObjectId, ref: "xin-contract" }
+     threshold :{ type:Number, default: 0},
+     contract : { type: mongoose.Types.ObjectId, ref: "xin-contract" },
+     comparator : { type: String, default: '', enum: ["EQUAL_TO", "NOT_EQUAL_TO", "GREATER_EQUAL_TO", "GREATER_THAN", "LESS_EQUAL_TO", "LESS_THAN"]},
   },
   destinations: [{ type: mongoose.Types.ObjectId, ref: "xin-destination" }],
   status: { type: Boolean, default: true },
@@ -46,7 +47,8 @@ alertSchema.static({
       channelName:1,
       status:1
     }).populate("target.contract",{
-      contractName:1,
+      contractName:1, 
+      decimals:1,
       address:1
     });
   },
@@ -56,6 +58,8 @@ alertSchema.static({
       type:1,
       url:1,
       label:1
+    }).populate("target",{
+      comparator:1,
     });
   },
   findOneAndUpdateData: function (findObj, updateObj) {

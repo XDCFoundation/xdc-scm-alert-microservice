@@ -9,7 +9,8 @@ export default class Manger {
             "type": requestData.type,
             "target.type": requestData.target.type,
             "target.value": requestData.target.value,
-            "userId": requestData.userId
+            "userId": requestData.userId,
+            "target.comparator": requestData.target.comparator,
         })
         if (getAlert) {
             if (getAlert.isDeleted === true)
@@ -19,6 +20,7 @@ export default class Manger {
         }
         const alertObject = new AlertSchema(requestData);
         alertObject["alertId"] = alertObject._id;
+        alertObject["target"]["comparator"] = requestData.target.comparator;
         return await alertObject.saveData();
     }
     getAlertList = async (request) => {
