@@ -22,7 +22,7 @@ const alertSchema = new mongoose.Schema({
      network: { type:String, default: "" },
      threshold :{ type:Number, default: 0},
      contract : { type: mongoose.Types.ObjectId, ref: "xin-contract" },
-     comparator : { type: String, default: '', enum: ["EQUAL TO", "NOT EQUAL TO", "GREATER EQUAL TO", "GREATER THAN", "LESS EQUAL TO", "LESS THAN"]},
+     comparator : { type: String, default: '', enum: ["EQUAL_TO", "NOT_EQUAL_TO", "GREATER_EQUAL_TO", "GREATER_THAN", "LESS_EQUAL_TO", "LESS_THAN"]},
   },
   destinations: [{ type: mongoose.Types.ObjectId, ref: "xin-destination" }],
   status: { type: Boolean, default: true },
@@ -47,7 +47,8 @@ alertSchema.static({
       channelName:1,
       status:1
     }).populate("target.contract",{
-      contractName:1, decimals:1,
+      contractName:1, 
+      decimals:1,
       address:1
     });
   },
