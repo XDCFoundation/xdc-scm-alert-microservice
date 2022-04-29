@@ -127,7 +127,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert, "greater or equal to");
+                        await sendDataToQueue(transaction, alert, comparator.GREATER_OR);
                       }
                     break;
 
@@ -153,7 +153,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert, "less or equal to");
+                        await sendDataToQueue(transaction, alert, comparator.LESS_OR);
                       }
                     break;
                     
