@@ -343,7 +343,7 @@ const getMessage = (transaction, type, contract, comparator, threshold) => {
             message = `A failed transaction has happened on the ${contract} at ${moment(transaction.timestamp * 1000).utc().format("lll")}.\n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
-            message = `A transaction of value ${comparator ? comparator : "".replaceAll("_", " ").toLowerCase()} ${threshold} has happened on the ${contract} at ${moment(transaction.timestamp * 1000).utc().format("lll")}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `A transaction of value ${!comparator ? "" : comparator.replaceAll("_", " ").toLowerCase()} ${threshold} has happened on the ${contract} at ${moment(transaction.timestamp * 1000).utc().format("lll")}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         default:
             break;

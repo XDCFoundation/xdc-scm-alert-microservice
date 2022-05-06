@@ -13,8 +13,8 @@ export default class EmailTemplate {
          <span class="mainSpan"> A transaction of ${alertType
            .split(" ")[0]
            .toLowerCase()} <span class="content">${
-      comparator ? comparator : "".replaceAll("_", " ").toLowerCase()
-    }</span> <span class="content">${threshold} </span> has happened on <span class="content">${alertTargetValue} </span> at ${moment(
+      !comparator ? "" : comparator.replaceAll("_", " ").toLowerCase()
+    }</span> <span class="content">${threshold} </span> had happened on <span class="content">${alertTargetValue} </span> at ${moment(
       transaction.timestamp * 1000
     )
       .utc()
