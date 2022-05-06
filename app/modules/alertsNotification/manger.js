@@ -8,6 +8,7 @@ import { executeHTTPRequest } from "../../service/http-service";
 import XdcService from "../../service/xdcService";
 import EmailTemplate from '../../../views/emailTemplate';
 import { comparator } from "../../common/constants";
+import moment from "moment";
 
 export default class Manger {
 
@@ -100,7 +101,7 @@ export default class Manger {
                         "kajal",
                         httpConstants.LOG_LEVEL_TYPE.INFO
                       );
-                      await sendDataToQueue(transaction, alert);
+                      await sendDataToQueue(transaction, alert, comparator.EQUAL_TO);
                     }
                     break;
 
@@ -113,7 +114,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert);
+                        await sendDataToQueue(transaction, alert, comparator.NOT_EQUAL_TO);
                       }
                     break;
 
@@ -126,7 +127,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert);
+                        await sendDataToQueue(transaction, alert, comparator.GREATER_OR);
                       }
                     break;
 
@@ -139,7 +140,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert);
+                        await sendDataToQueue(transaction, alert, comparator.GREATER_THAN);
                       }
                     break;
 
@@ -152,7 +153,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert);
+                        await sendDataToQueue(transaction, alert, comparator.LESS_OR);
                       }
                     break;
                     
@@ -165,7 +166,7 @@ export default class Manger {
                           "kajal",
                           httpConstants.LOG_LEVEL_TYPE.INFO
                         );
-                        await sendDataToQueue(transaction, alert);
+                        await sendDataToQueue(transaction, alert, comparator.LESS_THAN);
                       }
                     break;
                 }
@@ -241,7 +242,7 @@ export default class Manger {
 
 }
 
-const sendDataToQueue = async (transaction, alert) => {
+const sendDataToQueue = async (transaction, alert, comparator) => {
     Utils.lhtLog("sendDataToQueue", `sendDataToQueue:started`, {}, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
     if (alert && alert.destinations && alert.destinations.length) {
         let typeName = getTypeName(alert);
@@ -258,12 +259,12 @@ const sendDataToQueue = async (transaction, alert) => {
             if (dest[index].status === alertType.DESTINATIOM_STATUS.VERIFIED || dest[index].status === alertType.DESTINATIOM_STATUS.CONNECTED) {
                 switch (dest[index].type) {
                     case alertType.DESTINATION_TYPE.EMAIL.type:
-                        let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName);
+                        let mailNotificationRes = getMailNotificationResponse(transaction, alert, dest[index], "MAIL", typeName, comparator);
                         Utils.lhtLog("sendDataToQueue", "mailNotificationRes", mailNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO);
                         await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(mailNotificationRes));
                         break;
                     case alertType.DESTINATION_TYPE.SLACK.type:
-                        let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName)
+                        let slackNotificationRes = getDataObject(transaction, alert, dest[index], "SLACK", typeName, comparator)
                         Utils.lhtLog("sendDataToQueue", "slackNotificationRes", slackNotificationRes, "kajal", httpConstants.LOG_LEVEL_TYPE.INFO)
                         await AMQPController.insertInQueue(Config.NOTIFICATION_EXCHANGE, Config.NOTIFICATION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, JSON.stringify(slackNotificationRes));
                         break;
@@ -294,10 +295,10 @@ const sendDataToQueue = async (transaction, alert) => {
     }
 }
 
-const getMailNotificationResponse = (transaction, alert, destination, type, typeName) => {
+const getMailNotificationResponse = (transaction, alert, destination, type, typeName, comparator) => {
     return {
         "title": alertType.ALERT_TYPE[alert.type].name,
-        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, alertType.ALERT_TYPE[alert.target.type].name, typeName, transaction, alert._id, transaction.contractAddress),
+        "description": EmailTemplate.createEmail(alertType.ALERT_TYPE[alert.type].name, typeName, transaction, alert.target.threshold, comparator),
         "timestamp": transaction.timestamp,
         "userID": alert.userId,
         "postedTo": destination.url,
@@ -309,10 +310,10 @@ const getMailNotificationResponse = (transaction, alert, destination, type, type
         "addedOn": Date.now(),
     }
 }
-const getDataObject = (transaction, alert, destination, type, typeName) => {
+const getDataObject = (transaction, alert, destination, type, typeName, comparator) => {
     let data = {
         "title": alertType.ALERT_TYPE[alert.type].name,
-        "description": getMessage(transaction, alert.type),
+        "description": getMessage(transaction, alert.type, typeName, comparator, alert.target.threshold),
         "timestamp": transaction.timestamp,
         "userId": alert.userId,
         "payload": { timestamp: transaction.timestamp, url: destination.url, txHash: transaction.hash, contractAddress: transaction.contractAddress, network: transaction.network, userId: alert.userId, typeName: typeName },
@@ -332,17 +333,17 @@ const getDataObject = (transaction, alert, destination, type, typeName) => {
 
 }
 
-const getMessage = (transaction, type) => {
+const getMessage = (transaction, type, contract, comparator, threshold) => {
     let message = '';
     switch (type) {
         case alertType.ALERT_TYPE.SUCCESSFULL_TRANSACTIONS.type:
-            message = `A Successful Transaction \n\n${transaction.hash} \n\nhappened on the Contract Address \n\n${transaction.contractAddress} from the address \n\n${transaction.from}.\n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `A successful transaction has happened on the ${contract} at ${moment(transaction.timestamp * 1000).utc().format("lll")}.\n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         case alertType.ALERT_TYPE.FAILED_TRANSACTIONS.type:
-            message = `A Failed Transaction \n\n${transaction.hash} \n\nhappened on the Contract Address \n\n${transaction.contractAddress}  from the address \n\n${transaction.from}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `A failed transaction has happened on the ${contract} at ${moment(transaction.timestamp * 1000).utc().format("lll")}.\n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         case alertType.ALERT_TYPE.TRANSACTION_VALUE.type:
-            message = `Transaction \n\n${transaction.hash} \n\nhappened on the Contract Address \n\n${transaction.contractAddress}  from the address \n\n${transaction.from}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
+            message = `A transaction of value ${comparator ? comparator : "".replaceAll("_", " ").toLowerCase()} ${threshold} has happened on the ${contract} at ${moment(transaction.timestamp * 1000).utc().format("lll")}. \n\nView Transaction : ${Config.WEB_APP_URL}/transactions/transaction-details?${transaction.hash}`
             break;
         default:
             break;
